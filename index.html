@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="classic" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Library</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="app.js" defer></script>
+
+</head>
+<body>
+     <header class="head">
+    <div class="header">
+      <h1>mini library</h1>
+      
+  <!----------------------theme dropdown------------------------------------->
+      <div class="theme-dropdown">
+        <!-- زر الإيموجي -->
+<button id="themeToggleBtn" class="theme-icon-btn" aria-label="Change theme">🎨</button>
+
+<!-- قائمة الثيمات -->
+ 
+<select title="dropdown" id="themeSelect" class="hidden">
+  <option value="classic">Classic</option>
+  <option value="modern">Modern</option>
+  <option value="night">Night</option>
+  <option value="colorful">Colorful</option>
+</select>
+      </div>
+    </div>
+  </header>
+  <div class="burger-menu">
+     <!--------------- Burger Menu Button ------------------------------>
+    <button title="burgerMenu" id="burgerMenu" class="burger-menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+  <main class="container">
+    
+  <!----------------------menu filter------------------------------------->
+  
+   <nav class="menu-bar">
+   
+
+    <ul class="filter-list" id="filterList">
+        <li data-filter="all" class="active">All</li>
+        <li data-filter="Want to Read">Want to Read </li>
+        <li data-filter="Finished">Finished</li>
+        <li data-filter="Favorites">Favorites</li>
+    </ul>
+    
+
+<!----------------------hero section------------------------------------->
+
+    </nav>
+     <!-- Background overlay for burger menu -->
+<div id="menuOverlay" class="menu-overlay hidden"></div>
+    <section class="hero-section">
+        <h1>For every book lover who finds magic in turning pages</h1>
+        <button class="btn-p">+ add book</button>
+    </section>
+    <section class="header-container">
+      <!----------------------search bar------------------------------------->
+      
+    <div class="search-bar">
+  <form>
+    <input type="text" id="searchInput" placeholder="Search for a book..." />
+  </form>
+</div>
+ <section class="books-stats">
+      <p>Complete <span id="completedCount">0</span> of <span id="totalCount">0</span></p>
+    </section>
+    </section>
+   
+<!-----------------------delete msg----------------------------------->
+<dialog id="confirmDeleteDialog" class="confirm-dialog">
+  <div class="dialog-content">
+    <p class="confirm-message">are you scure to delete this book?</p>
+    <div class="dialog-actions">
+      <button id="cancelDelete" class="btn-s">cancel</button>
+      <button id="confirmDelete" class="btn-p">delete</button>
+    </div>
+  </div>
+</dialog>
+
+<!----------------------book dialog-------------------------------------> 
+    
+<dialog id="bookDialog">
+      <div class="dialog-content">
+        <div class="dialog-header">
+          <h2 class="dialog-title" id="dialogTitle">Add New book</h2>
+          <button class="close-btn" onclick="closeTaskDialog()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="bookForm">
+          <div class="form-group">
+            <label for="bookTitle" class="form-label">book title</label>
+            <input type="text" id="bookTitle" class="form-input" placeholder="Enter book title..." required />
+          </div>
+          <div class="form-group">
+            <label for="bookTitle" class="form-label">author</label>
+            <input type="text" id="bookAuthor" class="form-input" placeholder="Enter author name..." required />
+          </div>
+          <div class="form-group">
+         <label for="bookTitle" class="form-label">rate
+            <select id="bookRating">
+              <option value="1">⭐</option>
+             <option value="2">⭐⭐</option>
+             <option value="3">⭐⭐⭐</option>
+             <option value="4">⭐⭐⭐⭐</option>
+             <option value="5">⭐⭐⭐⭐⭐</option>
+           </select>
+          </label>
+          </div>
+          <div  class="form-group">
+            <label for="bookTitle" class="form-label">state
+                <select id="bookStatus">
+                  <option value="want to read">want to read</option>
+                 <option value="finished">Finished</option>
+               </select>
+             </label>
+          </div>
+          <div  class="form-group book-cover form-label">
+          <label>Book Cover</label>
+          <input type="file" id="book-image" accept="image/*">
+          </div>
+
+          <div class="dialog-actions">
+            <button type="button" class="btn-s cancel-btn" onclick="closeTaskDialog()">Cancel</button>
+            <button type="submit" class=" btn-p save-btn">Save book</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+    <!-----------------------------------------cards--------------------->
+    
+    <section class="books">
+      <div id="bookContainer" class="book-grid">
+        <!-- Books will be added dynamically here -->
+      </div>
+      <div id="pagination" class="pagination"></div>
+
+    </section>
+    <!---------------------------------------disply the card-------------->
+
+    <div id="bookModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <div class="model-d">
+    <img id="modalImage" src="" alt="Book Image" />
+    <div id="modal-detaile">
+    <h2 id="modalTitle"></h2>
+    <p id="modalAuthor"></p>
+    <p id="modalStatus"></p>
+    <p id="modalRating"></p>
+    </div>
+</div>
+    <label for="notes">notes</label>
+    <textarea id="bookNotes" rows="4" placeholder="enter your note..."></textarea>
+
+    <button id="saveNotesBtn" class="btn-p">save notes </button>
+  </div>
+</div>
+
+  </main>
+  
+</body>
+</html>
