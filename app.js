@@ -1,12 +1,10 @@
+// app.js - نسخة مُعدّلة وصالحة للعمل مع HTML المرسل
 
-
-/***********theme selector**************************/
-const themeSelect = document.getElementById('themeSelect');
+// عناصر DOM الرئيسية
 const bookContainer = document.getElementById('bookContainer');
 const paginationContainer = document.getElementById('pagination');
-const searchInput = document.getElementById("searchInput");
+const searchInput = document.getElementById('searchInput');
 
-/********************************* */
 const bookModal = document.getElementById('bookModal');
 const modalImage = document.getElementById('modalImage');
 const modalTitle = document.getElementById('modalTitle');
@@ -15,69 +13,67 @@ const modalStatus = document.getElementById('modalStatus');
 const modalRating = document.getElementById('modalRating');
 const bookNotes = document.getElementById('bookNotes');
 const closeModalBtn = document.getElementById('closeModal');
-/********************************* */
 
-let tasks = [];
-let editingTaskId = null;
-
-let currentPage = 1;
-const booksPerPage = 10;
-
-themeSelect.addEventListener('change', function () {
-  const selectedTheme = this.value;
-  document.documentElement.setAttribute('data-theme', selectedTheme);
-  localStorage.setItem('theme', selectedTheme);
-});
-
-window.addEventListener('load', () => {
-  const savedTheme = localStorage.getItem('theme') || 'classic';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  themeSelect.value = savedTheme;
-});
-
-/**************save book****************************/
-function saveBooks() {
-  localStorage.setItem('books', JSON.stringify(books));
-}
-
-/************filter list**************************/
 const bookForm = document.getElementById('bookForm');
 const bookDialog = document.getElementById('bookDialog');
 const addBookBtn = document.querySelector('.btn-p');
 const dialogTitle = document.getElementById('dialogTitle');
 
-const detailsDialog = document.getElementById('detailsDialog');
-const detailsImage = document.getElementById('detailsImage');
-const detailsTitle = document.getElementById('detailsTitle');
-const detailsAuthor = document.getElementById('detailsAuthor');
-const detailsRating = document.getElementById('detailsRating');
-const detailsStatus = document.getElementById('detailsStatus');
-const detailsNotes = document.getElementById('detailsNotes');
-const saveNotesBtn = document.getElementById('saveNotesBtn');
+const confirmDeleteDialog = document.getElementById('confirmDeleteDialog');
+const confirmDeleteBtn = document.getElementById('confirmDelete');
+const cancelDeleteBtn = document.getElementById('cancelDelete');
+
+const filterList = document.getElementById('filterList');
+const burgerMenu = document.getElementById('burgerMenu');
+const menuBar = document.querySelector('.menu-bar');
+const menuOverlay = document.getElementById('menuOverlay');
+const themeToggle = document.getElementById('themeToggle');
 
 let books = JSON.parse(localStorage.getItem('books')) || [];
 let editingId = null;
+let bookIdToDelete = null;
 
-addBookBtn.addEventListener('click', () => {
-  openBookDialog();
-});
+let currentPage = 1;
+const booksPerPage = 10;
+let currentFilter = 'all'; // 'all' or 'want to read' or 'finished' or 'favorites'
+
+// ====== ثيم ابتدائي من localStorage ======
+(function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') {
+    document.body.classList.add('dark-theme');
+  } else {
+    document.body.classList.remove('dark-theme');
+  }
+})();
+
+// ====== حدث تبديل الثيم (sun / moon toggle) ======
+if (themeToggle) {
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+}
+
+// ====== فتح وغلق دياالوج الكتاب ======
+addBookBtn.addEventListener('click', () => openBookDialog());
 
 function openBookDialog(book = null) {
-  bookDialog.showModal();
   if (book) {
     dialogTitle.textContent = "Edit Book";
-    bookForm.bookTitle.value = book.title;
-    bookForm.bookAuthor.value = book.author;
-    bookForm.bookRating.value = book.rating;
-    bookForm.bookStatus.value = book.status;
+    document.getElementById('bookTitle').value = book.title || '';
+    document.getElementById('bookAuthor').value = book.author || '';
+    document.getElementById('bookRating').value = book.rating || '1';
+    document.getElementById('bookStatus').value = book.status || 'want to read';
     editingId = book.id;
   } else {
     dialogTitle.textContent = "Add New book";
     bookForm.reset();
     editingId = null;
   }
+  bookDialog.showModal();
 }
-
 
 function closeTaskDialog() {
   bookDialog.close();
@@ -85,189 +81,196 @@ function closeTaskDialog() {
   editingId = null;
 }
 
-bookForm.addEventListener('submit', e => {
+// ====== حفظ/تحديث كتاب ======
+function saveBooksToStorage() {
+  localStorage.setItem('books', JSON.stringify(books));
+}
+
+bookForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const title = bookForm.bookTitle.value.trim();
-  const author = bookForm.bookAuthor.value.trim();
-  const rating = bookForm.bookRating.value;
-  const status = bookForm.bookStatus.value;
+  const title = document.getElementById('bookTitle').value.trim();
+  const author = document.getElementById('bookAuthor').value.trim();
+  const rating = parseInt(document.getElementById('bookRating').value) || 1;
+  const status = document.getElementById('bookStatus').value.trim();
 
   const fileInput = document.getElementById('book-image');
-  const file = fileInput.files[0];
+  const file = fileInput && fileInput.files[0];
+
+  function finalizeSave(imageData) {
+    if (editingId) {
+      books = books.map(b => b.id === editingId ? { ...b, title, author, rating, status, image: imageData } : b);
+    } else {
+      const newBook = {
+        id: Date.now(),
+        title, author, rating, status,
+        image: imageData || '',
+        isFavorite: false,
+        notes: ''
+      };
+      books.push(newBook);
+    }
+    saveBooksToStorage();
+    renderBooks();
+    closeTaskDialog();
+  }
 
   if (file) {
     const reader = new FileReader();
-    reader.onload = function (event) {
-      const image = event.target.result;
-      saveBook({ title, author, rating, status, image });
+    reader.onload = function (ev) {
+      finalizeSave(ev.target.result);
     };
     reader.readAsDataURL(file);
   } else {
+    // لو بدون صورة: خذ الصورة القديمة لو كنا نعدّل
     let image = '';
     if (editingId) {
       const book = books.find(b => b.id === editingId);
       image = book ? book.image : '';
     }
-    saveBook({ title, author, rating, status, image });
+    finalizeSave(image);
   }
 });
 
-function saveBook(bookData) {
-  if (editingId) {
-    books = books.map(b => b.id === editingId ? { ...b, ...bookData, id: editingId } : b);
-  } else {
-    const newBook = {
-      ...bookData,
-      id: Date.now(),
-      isFavorite: false,
-      notes: '' 
-    };
-    books.push(newBook);
-  }
-
-  localStorage.setItem('books', JSON.stringify(books));
-  renderBooks();
-  closeTaskDialog();
-}
-
-const confirmDeleteDialog = document.getElementById('confirmDeleteDialog');
-const confirmDeleteBtn = document.getElementById('confirmDelete');
-const cancelDeleteBtn = document.getElementById('cancelDelete');
-
-let bookIdToDelete = null;
-
+// ====== حذف كتاب مع تأكيد ======
 function deleteBook(id) {
   bookIdToDelete = id;
   confirmDeleteDialog.showModal();
 }
-
 cancelDeleteBtn.addEventListener('click', () => {
   confirmDeleteDialog.close();
   bookIdToDelete = null;
 });
-
 confirmDeleteBtn.addEventListener('click', () => {
   if (bookIdToDelete !== null) {
-    books = books.filter(book => book.id !== bookIdToDelete);
-    localStorage.setItem('books', JSON.stringify(books));
+    books = books.filter(b => b.id !== bookIdToDelete);
+    saveBooksToStorage();
     renderBooks();
     bookIdToDelete = null;
     confirmDeleteDialog.close();
   }
 });
 
+// ====== تعديل كتاب (يفتح الدياالوج مع بيانات الكتاب) ======
 function editBook(id) {
   const book = books.find(b => b.id === id);
   if (book) openBookDialog(book);
 }
 
-// *** الوظيفة الجديدة لفتح ديتيل دياالوج لما تضغط على كارد ***
+// ====== فتح تفاصيل (المودال) و حفظ الملاحظات ======
 function openDetailsDialog(bookId) {
   const book = books.find(b => b.id === bookId);
   if (!book) return;
-
   modalImage.src = book.image || 'https://via.placeholder.com/100x150?text=No+Image';
   modalTitle.textContent = book.title;
   modalAuthor.textContent = book.author;
   modalStatus.textContent = book.status;
   modalRating.textContent = '⭐'.repeat(book.rating) + '☆'.repeat(5 - book.rating);
   bookNotes.value = book.notes || '';
-
-  saveNotesBtn.dataset.bookId = bookId;
+  // خزن id في الزر عشان نستخدمه لاحقًا
+  document.getElementById('saveNotesBtn').dataset.bookId = bookId;
   bookModal.classList.remove('hidden');
 }
 
-
-// حفظ الملاحظات الجديدة
-saveNotesBtn.addEventListener('click', () => {
-  const bookId = parseInt(saveNotesBtn.dataset.bookId);
-  const bookIndex = books.findIndex(b => b.id === bookId);
-  if (bookIndex === -1) return;
-
-  books[bookIndex].notes = bookNotes.value.trim();
-  saveBooks();
+document.getElementById('saveNotesBtn').addEventListener('click', () => {
+  const bookId = parseInt(document.getElementById('saveNotesBtn').dataset.bookId);
+  const idx = books.findIndex(b => b.id === bookId);
+  if (idx === -1) return;
+  books[idx].notes = bookNotes.value.trim();
+  saveBooksToStorage();
   renderBooks();
   bookModal.classList.add('hidden');
 });
 
+if (closeModalBtn) {
+  closeModalBtn.addEventListener('click', () => {
+    bookModal.classList.add('hidden');
+  });
+}
 
-// *** تعديل renderBooks لتضيف حدث فتح الديتيل دياالوج على الكارد ***
+// ====== تفضيل / إلغاء تفضيل ======
+function toggleFavorite(bookId) {
+  const book = books.find(b => b.id === bookId);
+  if (!book) return;
+  book.isFavorite = !book.isFavorite;
+  saveBooksToStorage();
+  renderBooks();
+  // اختياري: إشعار بسيط
+  // alert(book.isFavorite ? `تمت إضافة "${book.title}" إلى المفضلة` : `تمت إزالة "${book.title}" من المفضلة`);
+}
+
+// جعل الدوال متاحة للسطر HTML (عشان أزرار inline)
+window.toggleFavorite = toggleFavorite;
+window.editBook = editBook;
+window.deleteBook = deleteBook;
+window.openDetailsDialog = openDetailsDialog;
+
+// ====== فلترة و رندر الكتب مع pagination ======
 function renderBooks(overrideBooks = null) {
   bookContainer.innerHTML = '';
-  let filteredBooks = overrideBooks || books;
+  // اختار مجموعة الكتب بناءً على البحث أو الفلتر
+  let filtered = overrideBooks !== null ? overrideBooks.slice() : books.slice();
 
-  if (!overrideBooks) {
-    if (currentFilter === 'Favorites') {
-      filteredBooks = books.filter(book => book.isFavorite);
-    } else if (currentFilter === 'Want to Read') {
-      filteredBooks = books.filter(book => book.status.toLowerCase() === 'want to read');
-    } else if (currentFilter === 'Finished') {
-      filteredBooks = books.filter(book => book.status.toLowerCase() === 'finished');
+  if (overrideBooks === null) {
+    // فلترة حسب currentFilter (جمع بها أحرف صغيرة لترابط)
+    const cf = (currentFilter || 'all').toLowerCase();
+    if (cf === 'favorites') {
+      filtered = filtered.filter(b => b.isFavorite);
+    } else if (cf === 'want to read') {
+      filtered = filtered.filter(b => (b.status || '').toLowerCase() === 'want to read');
+    } else if (cf === 'finished') {
+      filtered = filtered.filter(b => (b.status || '').toLowerCase() === 'finished');
     }
   }
 
-  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
-  if (currentPage > totalPages) currentPage = totalPages || 1;
-
+  const totalPages = Math.max(1, Math.ceil(filtered.length / booksPerPage));
+  if (currentPage > totalPages) currentPage = totalPages;
   const start = (currentPage - 1) * booksPerPage;
-  const end = start + booksPerPage;
-  const paginatedBooks = filteredBooks.slice(start, end);
+  const paginated = filtered.slice(start, start + booksPerPage);
 
-  if (paginatedBooks.length === 0) {
+  if (paginated.length === 0) {
     bookContainer.innerHTML = '<p>no result</p>';
   } else {
-    paginatedBooks.forEach(book => {
+    paginated.forEach(book => {
       const stars = '⭐'.repeat(book.rating) + '☆'.repeat(5 - book.rating);
 
       const card = document.createElement('div');
-      card.classList.add('book-card');
+      card.className = 'book-card';
 
       card.innerHTML = `
         <div class="img-box">
           <img src="${book.image || 'https://via.placeholder.com/100x150?text=No+Image'}" alt="Book Cover" class="book-cover">
         </div>
         <div class="card-content">
-          <p><strong>${book.title}</strong></p>
-          <p>${book.author}</p>
+          <p><strong>${escapeHtml(book.title)}</strong></p>
+          <p>${escapeHtml(book.author)}</p>
           <p>Rate: <span class="stars">${stars}</span></p>
-          <p>Status: ${book.status}</p>
+          <p>Status: ${escapeHtml(book.status)}</p>
         </div>
         <div class="book-actions">
-          <button onclick="toggleFavorite(${book.id})" class="favorite-btn">
-            <i class="fas fa-heart ${book.isFavorite ? 'favorite-active' : ''}"></i>
+          <button class="favorite-btn icon" onclick="toggleFavorite(${book.id})">
+            <i class="fas fa-heart  ${book.isFavorite ? 'favorite-active' : ''}"></i>
           </button>
-          <button onclick="editBook(${book.id})"><i class="fas fa-edit"></i></button>
-          <button onclick="deleteBook(${book.id})"><i class="fas fa-trash-alt"></i></button>
-          <button onclick="noteBook(${book.id})"><i class="fa fa-file-text" aria-hidden="true"></i></button>
+          <button class="icon" onclick="editBook(${book.id})"><i class="fas fa-edit "></i></button>
+          <button class="icon" onclick="deleteBook(${book.id})"><i class="fas fa-trash-alt "></i></button>
+          <button class="notes-btn icon" onclick="openDetailsDialog(${book.id})"><i class="fa fa-file-text " aria-hidden="true"></i></button>
         </div>
       `;
-/******************************************************************* */
-      // لما تضغط على الكارد (مش على الأزرار) يفتح التفاصيل
+      // لو ضغطت على الكارد نفسه (مو الأزرار) نفتَح التفاصيل:
       card.addEventListener('click', (e) => {
-        if (
-          !e.target.closest('.favorite-btn') &&
-          !e.target.closest('.fa-edit') &&
-          !e.target.closest('.fa-trash-alt')
-        ) {
+        if (!e.target.closest('.book-actions')) {
           openDetailsDialog(book.id);
         }
       });
-
       bookContainer.appendChild(card);
     });
   }
-closeModalBtn.addEventListener('click', () => {
-  bookModal.classList.add('hidden');
-});
-/********************************************************************** */
   updateBookCounter();
   renderPagination(totalPages);
 }
 
 function renderPagination(totalPages) {
   paginationContainer.innerHTML = '';
-
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement('button');
     btn.textContent = i;
@@ -281,92 +284,96 @@ function renderPagination(totalPages) {
 }
 
 function updateBookCounter() {
-  const completed = books.filter((b) => b.status.toLowerCase() === "finished").length;
+  const completed = books.filter(b => (b.status || '').toLowerCase() === 'finished').length;
   const total = books.length;
-  document.getElementById("completedCount").textContent = completed;
-  document.getElementById("totalCount").textContent = total;
+  const completedCount = document.getElementById('completedCount');
+  const totalCount = document.getElementById('totalCount');
+  if (completedCount) completedCount.textContent = completed;
+  if (totalCount) totalCount.textContent = total;
 }
 
-function toggleFavorite(bookId) {
-  const book = books.find(book => book.id === bookId);
-  if (book) {
-    book.isFavorite = !book.isFavorite;
-    saveBooks();
-    renderBooks();
-    if (book.isFavorite) {
-      alert(`تمت إضافة "${book.title}" إلى المفضلة ❤️`);
-    } else {
-      alert(`تمت إزالة "${book.title}" من المفضلة 💔`);
-    }
-  }
-}
-
-const filterList = document.getElementById('filterList');
-let currentFilter = 'all';
-
-filterList.addEventListener('click', (e) => {
-  if (e.target.tagName === 'LI') {
-    document.querySelectorAll('#filterList li').forEach(li => li.classList.remove('active'));
-    e.target.classList.add('active');
-    currentFilter = e.target.dataset.filter;
+// ====== بحث حيّ (search) ======
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (q === '') {
     currentPage = 1;
     renderBooks();
+    return;
   }
-});
-/************************************************************************************** */
-// دالة البحث
-searchInput.addEventListener("input", () => {
-  const query = searchInput.value.trim().toLowerCase();
-  const result = books.filter(book =>
-    book.title.toLowerCase().includes(query) ||
-    book.author.toLowerCase().includes(query)
+  const result = books.filter(b =>
+    (b.title || '').toLowerCase().includes(q) ||
+    (b.author || '').toLowerCase().includes(q)
   );
   currentPage = 1;
   renderBooks(result);
 });
-//************************************burgerMenu******************************************* */
-const burgerMenu = document.getElementById('burgerMenu');
-const menuBar = document.querySelector('.menu-bar');
-const menuOverlay = document.getElementById('menuOverlay');
 
-burgerMenu.addEventListener('click', () => {
-  menuBar.classList.toggle('show');
-  menuOverlay.classList.toggle('hidden');
+// ====== فلتر القائمة (menu) ======
+filterList.addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    document.querySelectorAll('#filterList li').forEach(li => li.classList.remove('active'));
+    e.target.classList.add('active');
+    currentFilter = (e.target.dataset.filter || 'all').toLowerCase();
+    currentPage = 1;
+    renderBooks();
+    // لو القائمة داخل وضع موبايل نغلقها:
+    if (menuBar && menuBar.classList.contains('show')) {
+      menuBar.classList.remove('show');
+      if (menuOverlay) menuOverlay.classList.add('hidden');
+    }
+  }
+});
+//========btn up=======
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+const addBookFloating = document.getElementById('addBookFloating');
+const heroSection = document.querySelector('.hero-section');
+
+window.addEventListener('scroll', () => {
+  const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+
+  if (window.scrollY > heroBottom) {
+    scrollTopBtn.classList.add('show');
+    addBookFloating.classList.add('show');
+  } else {
+    scrollTopBtn.classList.remove('show');
+    addBookFloating.classList.remove('show');
+  }
 });
 
-// إغلاق المينيو عند الضغط عالخلفية
-menuOverlay.addEventListener('click', () => {
-  menuBar.classList.remove('show');
-  menuOverlay.classList.add('hidden');
+scrollTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// إغلاق المينيو بعد اختيار فلتر
-document.querySelectorAll('.filter-list li').forEach(item => {
-  item.addEventListener('click', () => {
+// لما تضغطين الزر العائم يفتح نفس الدياالوج حق إضافة كتاب
+addBookFloating.addEventListener('click', () => {
+  openBookDialog();
+});
+
+
+// ====== burger menu ======
+if (burgerMenu) {
+  burgerMenu.addEventListener('click', () => {
+    menuBar.classList.toggle('show');
+    menuOverlay.classList.toggle('hidden');
+  });
+}
+if (menuOverlay) {
+  menuOverlay.addEventListener('click', () => {
     menuBar.classList.remove('show');
     menuOverlay.classList.add('hidden');
   });
-});
+}
 
-/*******************theme selector*********************** */
-const themeToggleBtn = document.getElementById('themeToggleBtn');
+// ====== مساعدة: وظيفة هروب من XSS بسيطة عند إدخال نصوص المستخدم ======
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
 
-
-// فتح / إغلاق القائمة عند الضغط على الإيموجي
-themeToggleBtn.addEventListener('click', () => {
-  themeSelect.classList.toggle('hidden');
-});
-
-// تخفي القائمة لما تختارين شي منها
-themeSelect.addEventListener('change', () => {
-  themeSelect.classList.add('hidden');
-});
-
-
-
-
-window.toggleFavorite = toggleFavorite;
-window.editBook = editBook;
-window.deleteBook = deleteBook;
-
+// ====== شغّل الرندر الأولي ======
 renderBooks();

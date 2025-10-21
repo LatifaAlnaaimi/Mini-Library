@@ -2,40 +2,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 /******************************theme color**************************/
 :root {
-  --bg-color: #f9f5f0;
-  --card-color: #fffdf7;
-  --main-color:#a47148;
-  --accent-color:#d6a77a;
+  --bg-color: #F9F5F0;
+  --card-color: #FFFDF7;
+  --main-color:#A47148;
+  --accent-color:#D6A77A;
   --text-color:#3e2c1c;
   --muted-text:#7e6954;
-  --border-color:#e6ddd0; 
+  --border-color:#F2F2F2; 
+  --shadow: 0 4px 7px rgba(0, 0, 0, 0.2);
 }
-[data-theme="modern"] {
-  --bg-color: #f5f2ee;
-  --card-color: #fff;
-  --main-color:#6e4e37;
-  --accent-color:#b08b6e;
-  --text-color:#2c1d13;
-  --muted-text:#6b5b4c;
-  --border-color:#eae4dc; 
-}
-[data-theme="night"] {
- --bg-color: #1c1b19;
-  --card-color: #262421;
-  --main-color:#e0c097;
-  --accent-color:#9c7a5b;
+body.dark-theme {
+  --bg-color: #1C1B19;
+  --card-color: #494848;
+  --main-color:#E0C097;
+  --accent-color:#E0C097;
   --text-color:#f4f4f4;
   --muted-text:#b3a896;
-  --border-color:#3b3a36; 
-}
-[data-theme="colorful"] {
- --bg-color: #fff9f4;
-  --card-color: #fff;
-  --main-color:#9c6b6b;
-  --accent-color:#d9bca3;
-  --text-color:#3c2b2b;
-  --muted-text:#a69494;
-  --border-color:#ebdcd4; 
+  --border-color:#1E1E1E; 
+  --shadow: 0 4px 7px rgba(121, 120, 120, 0.116);
 }
 *{
 font-family:"Poppins", sans-serif;
@@ -50,13 +34,14 @@ transition: all 0.2s ease;
 /*********************general button***************************/
 .btn-p{
 padding: 10px 20px;
-    border: none;
-    background: var(--accent-color);
-    border-radius: 5px;
-    font-size: 1rem;
+border: none;
+background: var(--accent-color);
+color: #1E1E1E;
+border-radius: 5px;
+font-size: 1rem;
 }
 .btn-p:hover{
-  background-color: var(--main-color);
+background-color: var(--main-color);
 color: var(--bg-color);
 }
 .btn-s{
@@ -65,256 +50,336 @@ border: none;
 font-size: 1rem;
 }
 .btn-s:hover{
- font-weight: 600;
+font-weight: 600;
 }
 /****************************header**********************/
 .container{
-    padding: 35px;
+padding: 35px;
 }
 .header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 5%;
-    width: auto;
-    height: 20%;
-    background-color: var(--main-color);
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 15px 5%;
+width: auto;
+height: 20%;
+background-color: var(--main-color);
 
 }
 .header h1{
-    color: var(--bg-color);
-   background-color: var(--main-color);
-    font-weight: 700;
-    cursor: pointer;
+color: var(--bg-color);
+background-color: var(--main-color);
+font-weight: 700;
+cursor: pointer;
 }
-/*****************************theme dropdown*************/
-.theme-dropdown{
-    background-color: var(--main-color);
+/*****************************theme*************/
+.theme{
+  display: flex;
+  justify-content: baseline;
+  background-color: transparent;
 }
-.header .theme-dropdown label{
-    color: var(--bg-color);
-    background-color: var(--main-color);
+
+/* زر تبديل المود */
+ .theme-toggle {
+  position: relative;
+  width: 44px;
+  height: 25px;
+  background:var(--border-color);
+  border-radius: 25px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  transition: background 0.4s ease;
 }
-.header .theme-dropdown select{
-    color: var(--bg-color);
-    background-color: var(--main-color);
-    cursor: pointer;
+.theme-toggle .sun-icon,
+.theme-toggle .moon-icon {
+  text-align: center;
+  font-size: 18px;
+  transition: transform 0.5s ease, opacity 0.4s ease;
+}
+.sun-icon{
+  color: var(--text-color);
+  background-color: transparent;
+
+}
+.moon-icon{
+  color: var(--text-color);
+  background-color: transparent;
+
+}
+/* الوضع النهاري */
+.theme-toggle .sun-icon {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* الوضع الليلي */
+.theme-toggle .moon-icon {
+  opacity: 0;
+  transform: translateX(25px);
+}
+
+/* لما يكون المود ليلي */
+body.dark-theme .theme-toggle {
+  background: #333;
+
+}
+
+body.dark-theme .theme-toggle .sun-icon {
+  opacity: 0;
+  transform: translateX(-25px);
+}
+
+body.dark-theme .theme-toggle .moon-icon {
+  opacity: 1;
+  transform: translateX(0);
 }
 /***************************menu bar**********************/
 .menu-bar{
-  display: flex;
-  justify-content: center;
-    margin: auto;
+display: flex;
+justify-content: center;
+margin: auto;
 }
 .menu{
-    padding: 20px;
+padding: 20px;
 }
 /****************************search bar********************/
-.search-bar {
+.header-container{
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  
+  flex-direction: column;
+  gap: 64px;
+}
+.search-bar {
+width: 100%;
+display: flex;
+justify-content:space-between;
+padding: 1rem;
 }
 
 .search-bar input {
-  padding: 0.4rem 0.4rem;
-  background: var(--bg-color);
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 300px;
-  transition: border 0.3s ease;
+padding: 0.4rem 0.4rem;
+background: var(--bg-color);
+border: 1px solid #ccc;
+border-radius: 5px;
+font-size: 1rem;
+width:500px;
+transition: border 0.3s ease;
 }
 
 .search-bar input:focus {
-  border-color: var(--main-color);
- outline: none;
+border-color: var(--main-color);
+outline: none;
 }
 
 /****************************menu list***********************************/
 .filter-list{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 35px;
-  list-style: none; 
-  padding: 0;
-  margin: 0;
-  transition: all 0.3s ease;
-  cursor: pointer;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 35px;
+list-style: none; 
+padding: 0;
+margin: 0;
+transition: all 0.3s ease;
+cursor: pointer;
 }
 .filter-list li:hover{
-    font-weight: bold;
+font-weight: bold;
 
 }
 .filter-list li.active {
-  font-weight: bold;
-  border-bottom: 2px solid var(--main-color);
-  color: var(--main-color);
+font-weight: bold;
+border-bottom: 2px solid var(--main-color);
+color: var(--main-color);
 }
 
 /**********************hero section******************************/
 .hero-section {
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;    
-  justify-content:center;
-  text-align: center;
+display: flex;
+flex-direction: column;
+align-items: center;    
+justify-content:center;
+text-align: center;
 height: 60vh;
-  padding:0 20% 0 20%;
-  gap: 2rem; 
- 
+padding:0 20% 0 20%;
+gap: 2rem; 
 }
 .hero-section h1{
-    font-size: 2rem;
+font-size: 48px;
+font-weight: 500;
+}
+/*********************************btn up*****************************/
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: var(--accent-color, #00BFA6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.scroll-top-btn.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 /******************************add book dialog*******************************/
 dialog {
-  margin: auto;
-  inset: 0;
-  border: none;
-  border-radius: 1rem;
-  padding: 0;
-  background: var(--bg-color);
-  color: var(--text-color);
-  max-width: 500px;
-  width: 90vw;
+margin: auto;
+inset: 0;
+border: none;
+border-radius: 1rem;
+padding: 0;
+background: var(--bg-color);
+color: var(--text-color);
+max-width: 500px;
+width: 90vw;
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.1);
-  -webkit-backdrop-filter:blur(4px);
-  backdrop-filter: blur(4px);
+background: rgba(0, 0, 0, 0.1);
+-webkit-backdrop-filter:blur(4px);
+backdrop-filter: blur(4px);
 }
 
 .dialog-content {
-  padding: 2rem;
+padding: 2rem;
 }
 
 .dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1.5rem;
 }
 
 .dialog-title {
-  font-size: 1.5rem;
-  font-weight: 600;
+font-size: 1.5rem;
+font-weight: 600;
 }
 
 .close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text-color);
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s ease;
+background: none;
+border: none;
+font-size: 1.5rem;
+cursor: pointer;
+color: var(--text-color);
+padding: 0.25rem;
+border-radius: 0.25rem;
+transition: background-color 0.2s ease;
 }
 
 .close-btn i:hover {
- color: var(--main-color);
+color: var(--main-color);
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+margin-bottom: 1.5rem;
 }
 
 .form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--text-color);
+display: block;
+margin-bottom: 0.5rem;
+font-weight: 500;
+color: var(--text-color);
 }
 
 .form-input, .form-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-  background: var(--bg-color);
-  color: var(--text-color);
+width: 100%;
+padding: 0.75rem;
+border: 2px solid var(--border-color);
+border-radius: 0.5rem;
+font-size: 1rem;
+transition: border-color 0.2s ease;
+background: var(--bg-color);
+color: var(--text-color);
 }
 
 .form-input:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--main-color);
+outline: none;
+border-color: var(--main-color);
 }
 
 .form-textarea {
-  resize: vertical;
-  min-height: 120px;
+resize: vertical;
+min-height: 120px;
 }
 
 .dialog-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+display: flex;
+gap: 1rem;
+justify-content: flex-end;
 }
 .book-cover {
-  width: 100px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 10px;
+width: 100px;
+height: 140px;
+object-fit: cover;
+border-radius: 4px;
+margin-bottom: 10px;
 }
 
 .cancel-btn, .save-btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
+padding: 0.75rem 1.5rem;
+border: none;
+border-radius: 0.5rem;
+cursor: pointer;
+font-weight: 500;
+transition: all 0.2s ease;
 }
 .form-group select {
-   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-  background: var(--bg-color);
-  color: var(--text-color);
+width: 100%;
+padding: 0.75rem;
+border: 2px solid var(--border-color);
+border-radius: 0.5rem;
+font-size: 1rem;
+transition: border-color 0.2s ease;
+background: var(--bg-color);
+color: var(--text-color);
 }
 
 /***********************books container***********************/
 .books {
-  padding: 2rem;
+padding-top: 64px;
+width: 100%;
 }
+
 #bookContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
+display: flex;
+flex-wrap: wrap;
+gap: 1.5rem;
+justify-content: center;
 }
 /***********************card**********************************/
 .book-card{
-  width: 350px;
-  border: solid 0.5px var(--border-color);
-  padding: 15px 0px 15px 0px;
-  border-radius: 10px;
-  display: grid;
-  align-items: center;
-  justify-content:center;
-  grid-template-columns: repeat(auto-fit, minmax(50%));
-   grid-template-rows: repeat(auto-fit, minmax(60%, 2fr));
-   gap:15px;
- box-shadow: 0 2px 8px rgba(8, 8, 8, 0.24);
-  transition: transform 0.3s ease;
+width: 380px;
+height: 270;
+border: solid 0.5px var(--border-color);
+padding: 15px 0px 15px 0px;
+border-radius: 10px;
+display: grid;
+align-items: center;
+justify-content:center;
+grid-template-columns: repeat(auto-fit, minmax(50%));
+grid-template-rows: repeat(auto-fit, minmax(60%, 2fr));
+gap:15px;
+box-shadow:var(--shadow);
+transition: transform 0.3s ease;
 }
 .book-card:hover{
- transform: translateY(-5px);
+transform: translateY(-5px);
 }
 /*****************************card content**********************/
 .img-box{
@@ -325,92 +390,98 @@ justify-content: center;
 width: 110px;
 }
 .card-content{
-  grid-column: 2 / 3; 
-  grid-row: 1 / 2;
-  width: 180px;
-  height: 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items:start;
-  padding-left: 7px;
-  padding-top: 7px;
+grid-column: 2 / 3; 
+grid-row: 1 / 2;
+width: 180px;
+height: 150px;
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+align-items:start;
+padding-left: 7px;
+padding-top: 7px;
 }
 .book-actions{
-  grid-column: 1 / 3; 
-  grid-row: 2 / 3;
-  justify-content: center;
-  text-align: center;
+grid-column: 1 / 3; 
+grid-row: 2 / 3;
+display: flex;
+justify-content:space-evenly;
+text-align: center;
+}
+.book-actions .icon{
+  width: 48px;
+  height: 45px;
+  background-color: var(--accent-color);
+  border-radius: 17px;
 }
 button{
-  border: none;
-  padding: 0 20px 0 20px;
+border:none;
 }
-button i:hover{
- font-size: 20px;
- color: var(--main-color);
+.icon:hover{
+font-size: 20px;
+transform: translateY(-5px);
 }
-.favorite-btn i {
-  color: gray;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.icon i{
+  text-align: center;
+  background-color: transparent;
+  font-size: 18px;
+  color: #1E1E1E;
 }
 
-.favorite-btn i.favorite-active {
-  color: red;
+.favorite-btn .favorite-active {
+color: red;
 }
 
 /******************delete msg*****************************/
 .confirm-dialog {
-  border: none;
-  border-radius: 10px;
-  width: 300px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+border: none;
+border-radius: 10px;
+width: 300px;
+padding: 20px;
+box-shadow: 0 0 20px rgba(0,0,0,0.2);
 }
 
 .confirm-dialog .dialog-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  text-align: center;
+display: flex;
+flex-direction: column;
+gap: 1rem;
+text-align: center;
 }
 
 .confirm-dialog .dialog-actions {
-  display: flex;
-  justify-content: space-between;
+display: flex;
+justify-content: space-between;
 }
 
 /********************how many book complete******************************/
 .pagination {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .pagination button {
-      margin: 0 5px;
-      padding: 6px 12px;
-      border: none;
-      background-color:var(--muted-text);
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .pagination button.active {
-      background-color:var(--main-color);
-    }
+  margin-top: 20px;
+  text-align: center;
+}
+.pagination button {
+  margin: 0 5px;
+  padding: 6px 12px;
+  border: none;
+  background-color:var(--muted-text);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.pagination button.active {
+  background-color:var(--main-color);
+}
 
-    /*****************contanier for search and complete books***************/
-    .header-container{
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-    }
+/*****************contanier for search and complete books***************/
+.header-container{
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+align-items: center;
+  }
+/************************disply the card*********************************/
 
-    /************************disply the card*********************************/
-
-   .hidden {
-  display: none !important;
+.hidden {
+display: none !important;
 }
 
     /* مودال الخلفية */
@@ -520,16 +591,18 @@ button i:hover{
 /********************************burger-menu**************************/
 /* زر البرغر */
 .burger-menu {
-  display: none;
+  display:none;
   background: none;
   border: none;
   color: var(--bg-color);
   cursor: pointer;
+  font-size: 40px;
+  padding-right: 2%;
   
 }
-.burger-menu:hover{
+.burger-menu i:hover{
   color: var(--main-color);
-  font-size: 2rem;
+  
 }
 /********************************theme selector*******************************************/
 .theme-icon-btn {
@@ -590,12 +663,75 @@ button i:hover{
   display: none;
 }
 
+/******************btn up **********************************/
+.float-btn{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--main-color);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 9999;
+}
+
+/* تحديد مواقع الأزرار */
+.add-book {
+  right: 20px;
+}
+.add-book i{
+   background-color: transparent;
+   color: #1E1E1E;
+}
+
+.scroll-top {
+  right: 20px;
+  bottom:80px ;
+  
+}
+.scroll-top i{
+   background-color: transparent;
+   color: #1E1E1E;
+}
+
+/* لما تطلع الأزرار */
+.floating-btn.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+
 /*********************** responsive *************************************************/
-@media (max-width: 700px) {
+@media (max-width: 1024px) {
+.hero-section{
+  height: 300px;
+}
+.hero-section h1{
+  font-size: 36px;
+  padding: 0;
+  margin: 0;
+  gap: 28px;
+}
+}
+
+@media (max-width: 860px) {
   .burger-menu {
     display: flex;
     justify-content: right;
-    margin-top: 15px;    
+    margin-top: 15px;   
+    font-size: 40px; 
   }
 
   .menu-bar {
@@ -647,14 +783,15 @@ button i:hover{
     font-size: 20px;
 }
 .hero-section {
-
-height: 30vh;
+height:300px;
   padding:0 0 0 0;
   gap: 1rem; 
  
 }
 .hero-section h1{
-    font-size: 1rem;
+    font-size: 34px;
+    padding-bottom: 38px;
+    height: 100px;
 }
 /*********************************/
 .btn-s , .btn-p{
@@ -663,7 +800,10 @@ height: 30vh;
 /*********************************/
 .search-bar {
   padding:0;
-  margin-bottom: 20px;
+  margin: 0;
+  margin-bottom: 16px;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .search-bar input {
@@ -673,17 +813,17 @@ height: 30vh;
 .header-container{
   display: flex;
   flex-direction: column;
-  align-content: center;
-  
+  padding: 0;
 }
 .books-stats{
   font-size: 14px;
 }
 /**********************************/
 .book-card{
-  padding: 15px 5px 15px 5px;
+  padding: 8px 0px 8px 0px;
   border-radius: 5px;
    gap:1px;
+   width: 320px;
 }
 .card-content{
   width: 150px;
@@ -694,14 +834,10 @@ height: 30vh;
 }
 
 /**********************************/
-.header .theme-dropdown label{
-  display: none;
-}
-/**********************************/
 
-.model-d{
-
- grid-template-columns: repeat(auto-fit, minmax(150px,99px));
+.book-grid{
+  width: 100%;
+  grid-template-columns: repeat(1, 1fr); /* عمودين في الشاشات المتوسطة */
 
 }
 
@@ -711,5 +847,150 @@ height: 30vh;
 }
 
 
+}
+
+@media (max-width: 768px) {
+  .burger-menu {
+    display: flex;
+    justify-content: right;
+    margin-top: 15px;   
+    font-size: 40px; 
+  }
+
+  .menu-bar {
+    display: none;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    position: absolute;
+    top: 10%;
+    right: 0;
+    width: 100%;
+    height: 50vh;
+    z-index: 10000;
+    border-top: 1px solid var(--border-color);
+  
+}
+
+  .menu-bar.show {
+    display: flex;
+  }
+
+  .filter-list {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  /* الخلفية الضبابية لما تنفتح القائمة */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 800;
+  transition: opacity 0.3s ease;
+}
+
+.menu-overlay.hidden {
+  display: none;
+}
+
+  .header{
+    margin: auto;
+}
+.header h1{
+    font-weight: 600;
+    font-size: 20px;
+}
+.hero-section {
+height:280px;
+  gap: 1rem; 
+}
+.hero-section h1{
+    font-size: 32px;
+    padding-bottom: 38px;
+    height: 100px;
+}
+/*********************************/
+.btn-s , .btn-p{
+  font-size: 14px;
+}
+/*********************************/
+.search-bar {
+  padding:0;
+  margin: 0;
+  margin-bottom: 16px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.search-bar input {
+  width: 310px;
+ 
+}
+.header-container{
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.books-stats{
+  font-size: 14px;
+}
+/**********************************/
+.book-card{
+  padding: 8px 0px 8px 0px;
+  border-radius: 5px;
+   gap:1px;
+   width: 330px;
+}
+.card-content{
+  width: 150px;
+  height: 160px;
+  font-size: 14px;
+  gap: 6px;
+
+}
+
+/**********************************/
+
+.book-grid{
+  width: 100%;
+  grid-template-columns: repeat(1, 1fr); /* عمودين في الشاشات المتوسطة */
+
+}
+
+/* العناوين والمحتوى */
+#modalTitle {
+  font-size: 1rem;
+}
+
+
+}
+
+@media (max-width: 500px) {
+  .search-bar{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+  }
+  .search-bar .btn-p{
+    width: 200px;
+
+  }
+  .header-container{
+  gap: 32px;
+}
+.hero-section {
+height: 180px;
+}
+
+.hero-section  h1{
+font-size: 18px; 
+}
 }
 

@@ -15,19 +15,13 @@
       <h1>mini library</h1>
       
   <!----------------------theme dropdown------------------------------------->
-      <div class="theme-dropdown">
-        <!-- زر الإيموجي -->
-<button id="themeToggleBtn" class="theme-icon-btn" aria-label="Change theme">🎨</button>
+      <div class="theme">
+            <div class="theme-toggle" id="themeToggle">
+  <i class="sun-icon fa-solid fa-sun"></i>
+  <i class="moon-icon fa-solid fa-moon"></i>
+</div>
 
-<!-- قائمة الثيمات -->
- 
-<select title="dropdown" id="themeSelect" class="hidden">
-  <option value="classic">Classic</option>
-  <option value="modern">Modern</option>
-  <option value="night">Night</option>
-  <option value="colorful">Colorful</option>
-</select>
-      </div>
+        </div>
     </div>
   </header>
   <div class="burger-menu">
@@ -58,21 +52,21 @@
 <div id="menuOverlay" class="menu-overlay hidden"></div>
     <section class="hero-section">
         <h1>For every book lover who finds magic in turning pages</h1>
-        <button class="btn-p">+ add book</button>
     </section>
     <section class="header-container">
+     
       <!----------------------search bar------------------------------------->
       
     <div class="search-bar">
   <form>
     <input type="text" id="searchInput" placeholder="Search for a book..." />
   </form>
+          <button class="btn-p">+ add book</button>
 </div>
  <section class="books-stats">
       <p>Complete <span id="completedCount">0</span> of <span id="totalCount">0</span></p>
     </section>
     </section>
-   
 <!-----------------------delete msg----------------------------------->
 <dialog id="confirmDeleteDialog" class="confirm-dialog">
   <div class="dialog-content">
@@ -161,8 +155,19 @@
     <button id="saveNotesBtn" class="btn-p">save notes </button>
   </div>
 </div>
+<div class="float-btn">
 
+<!-- زر إضافة كتاب جديد (عائم) -->
+<button title="addBookFloating" id="addBookFloating" class="floating-btn add-book">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<!-- زر الرجوع للأعلى -->
+<button  title="scrollTopBtn" id="scrollTopBtn" class="floating-btn scroll-top ">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+</div>
   </main>
-  
+  <script src="app.js"></script>
 </body>
 </html>
